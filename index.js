@@ -71,7 +71,10 @@ const initListeners = () => {
   });
 
   previewButton.addEventListener("click", (e) => {
-    if (!bTextures.length) return;
+    if (!bTextures.length) {
+      alert("Choose images for change side");
+      return;
+    }
     if (!rotated) {
       capturer.start();
       rotated = true;
@@ -123,8 +126,7 @@ const initListeners = () => {
   });
 
   saveAsGif.addEventListener("click", () => {
-    rotated = false;
-    capturer.save();
+    if (!rotated) capturer.save();
   });
 
   initThree();
@@ -142,6 +144,7 @@ const changeBTexture = () => {
     bCardSide.material.map = bTextures[2];
     window.cancelAnimationFrame(id);
     card.rotation.y = 0;
+    rotated = false;
     capturer.stop();
   }
 
@@ -186,7 +189,7 @@ const makeText = () => {
 
 const animate = function () {
   id = requestAnimationFrame(animate);
-  card.rotation.y += 0.15;
+  card.rotation.y += 0.015;
   changeBTexture();
   renderer.render(scene, camera);
   capturer.capture(renderer.domElement);
