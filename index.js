@@ -11,6 +11,7 @@ let capturer,
   bTextures = [],
   cardText = "Placeholder",
   centerOffset = 0,
+  rotated = false,
   font,
   renderer,
   camera,
@@ -71,16 +72,14 @@ const initListeners = () => {
 
   previewButton.addEventListener("click", (e) => {
     if (!bTextures.length) return;
-    capturer.start();
-    animate();
+    if (!rotated) {
+      capturer.start();
+      rotated = true;
+      animate();
+    }
   });
 
   const centerImage = (t) => {
-    // var fitScaleX = 1 / (t.image.width / t.image.height) / cardSize.y;
-    // console.log(fitScaleX);
-    // t.repeat.set(fitScaleX, 1);
-    // t.offset.x = wOffset = 0.15;
-
     const aspectOfPlane = cardSize.x / cardSize.y;
     const aspectOfImage = t.image.width / t.image.height;
     let yScale = 1;
@@ -124,7 +123,7 @@ const initListeners = () => {
   });
 
   saveAsGif.addEventListener("click", () => {
-    console.log(capturer);
+    rotated = false;
     capturer.save();
   });
 
@@ -132,15 +131,15 @@ const initListeners = () => {
 };
 
 const changeBTexture = () => {
-  if (card.rotation.y > Math.PI * 2) {
+  let r = card.rotation.y;
+  if (r >= Math.PI * 2 && r <= Math.PI * 2 * 2) {
     bCardSide.material.map = bTextures[1];
   }
-  if (card.rotation.y > Math.PI * 2 * 2) {
+  if (card.rotation.y >= Math.PI * 2 * 2) {
     bCardSide.material.map = bTextures[2];
   }
-  if (card.rotation.y > Math.PI * 2 * 3) {
+  if (card.rotation.y >= Math.PI * 2 * 3) {
     bCardSide.material.map = bTextures[2];
-    console.log("stop");
     window.cancelAnimationFrame(id);
     card.rotation.y = 0;
     capturer.stop();
@@ -187,7 +186,7 @@ const makeText = () => {
 
 const animate = function () {
   id = requestAnimationFrame(animate);
-  card.rotation.y += 0.015;
+  card.rotation.y += 0.15;
   changeBTexture();
   renderer.render(scene, camera);
   capturer.capture(renderer.domElement);
