@@ -1,4 +1,4 @@
-import * as THREE from "../three/three.module.js";
+import * as THREE from "./js/three.module.js";
 const aSideinput = document.querySelector(".a-side");
 const bSideinput = document.querySelector(".b-side");
 const previewButton = document.querySelector(".preview");
