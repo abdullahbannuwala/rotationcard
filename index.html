@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .button {
+        overflow: hidden;
+        color: black;
+        border: 1px solid black;
+        width: 220px;
+        position: relative;
+        padding: 8px 10px 8px 10px;
+        text-align: center;
+        margin-top: 5px;
+        box-sizing: border-box;
+      }
+      #viewer {
+        display: flex;
+        margin-top: 10px;
+      }
+      .preview {
+        width: 70px;
+        height: 35px;
+        margin: 0 10px;
+      }
+
+      .file-upload {
+        opacity: 0;
+        width: 220px;
+        height: 35px;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+      }
+
+      #render {
+        width: 500px;
+        height: 600px;
+      }
+      .make-gif {
+        align-self: flex-end;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="textarea">
+        Text
+        <input type="text" />
+      </div>
+      <div class="button">
+        <input class="file-upload a-side" type="file" />Choose image for Static
+        Side
+      </div>
+      <div class="button">
+        <input
+          class="file-upload b-side"
+          type="file"
+          accept=".jpg, .jpeg, .png, .dms"
+          multiple
+        />Choose image for Change side
+      </div>
+      <div id="viewer">
+        <div class="button preview">Preview</div>
+        <canvas id="render"></canvas>
+      </div>
+      <div class="button make-gif">Download as Gif</div>
+    </div>
+    <script src="./CCapture.all.min.js"></script>
+    <script src="./index.js" type="module"></script>
+  </body>
+</html>
