@@ -41,6 +41,12 @@ const initThree = () => {
   scene.add(spot);
 
   card = new THREE.Group();
+  card.add(
+    new THREE.Mesh(
+      new THREE.BoxBufferGeometry(cardSize.x + 0.1, cardSize.y + 0.1, 0.1),
+      new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    )
+  );
   const geometry = new THREE.PlaneGeometry(cardSize.x, cardSize.y);
 
   aCardSide = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
@@ -48,6 +54,8 @@ const initThree = () => {
     geometry,
     new THREE.MeshBasicMaterial({ side: THREE.BackSide })
   );
+  aCardSide.position.z = 0.1;
+  bCardSide.position.z = -0.1;
   card.add(aCardSide);
   card.add(bCardSide);
 
