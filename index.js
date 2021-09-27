@@ -182,7 +182,6 @@ const makeText = () => {
   );
   text.position.set(centerOffset, 0, 0.1);
   card.add(text);
-  //card.add(text2);
   renderer.render(scene, camera);
 };
 
