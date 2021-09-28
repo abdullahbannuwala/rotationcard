@@ -27,7 +27,7 @@ const cardSize = { x: 15, y: 25 };
 const initThree = () => {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
-    75,
+    45,
     canvas.clientWidth / canvas.clientHeight,
     0.1,
     1000
@@ -36,7 +36,7 @@ const initThree = () => {
   renderer.setSize(canvas.clientWidth, canvas.clientHeight);
   renderer.setClearColor(0x000000);
 
-  camera.position.z = 25;
+  camera.position.z = 39;
   let spot = new THREE.SpotLight();
   spot.position.z = 30;
   scene.add(spot);
@@ -59,7 +59,6 @@ const initThree = () => {
   bCardSide.position.z = -0.1;
   card.add(aCardSide);
   card.add(bCardSide);
-
   scene.add(card);
 };
 
