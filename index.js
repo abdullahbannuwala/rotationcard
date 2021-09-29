@@ -5,6 +5,8 @@ const previewButton = document.querySelector(".preview");
 const textField = document.querySelector(".textarea");
 const saveAsGif = document.querySelector(".make-gif");
 const canvas = document.querySelector("#render");
+const modalWindow = document.querySelector(".modal");
+const progress = document.querySelector("#progress");
 
 let capturer,
   text,
@@ -150,6 +152,11 @@ const changeBTexture = () => {
   bCardSide.material.needsUpdate = true;
 };
 
+const checkLoading = (e) => {
+  modalWindow.style.display = e >= 1 ? "none" : "flex";
+  progress.value = e;
+};
+
 const init = () => {
   new THREE.FontLoader().load("./helvetiker_bold.typeface.json", (response) => {
     font = response;
@@ -160,6 +167,7 @@ const init = () => {
     format: "gif",
     workersPath: "js/",
     framerate: 60,
+    onProgress: (e) => checkLoading(e),
   });
   initListeners();
 };

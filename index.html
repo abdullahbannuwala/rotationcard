@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+        justify-content: center;
+      }
+      .modal #progress {
+        align-self: center;
+      }
       .wrap {
         display: flex;
         flex-direction: column;
@@ -51,14 +66,20 @@
     </style>
   </head>
   <body>
+    <div class="modal">
+      <progress id="progress" min="0" max="1" value="0"></progress>
+    </div>
     <div class="wrap">
       <div class="textarea">
         Text
         <input type="text" />
       </div>
       <div class="button">
-        <input class="file-upload a-side" type="file" />Choose image for Static
-        Side
+        <input
+          class="file-upload a-side"
+          type="file"
+          accept=".jpg, .jpeg, .png, .dms"
+        />Choose image for Static Side
       </div>
       <div class="button">
         <input
