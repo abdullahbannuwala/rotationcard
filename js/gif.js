@@ -100,6 +100,7 @@
                   break;
                 case 3:
                   handler.call(this, arguments[1], arguments[2]);
+                  this.abort();
                   break;
                 default:
                   args = Array.prototype.slice.call(arguments, 1);

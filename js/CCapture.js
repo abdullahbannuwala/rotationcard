@@ -951,6 +951,10 @@
             _encoder.filename + _encoder.extension,
             _encoder.mimeType
           );
+          _encoder.encoder.frames = [];
+          _encoder.encoder.imageParts = [];
+          _encoder.encoder.finishedFrames = 0;
+          _encoder.encoder.nextFrame = 0;
           return false;
         };
       }
