@@ -3,20 +3,32 @@ const aSideinput = document.querySelector(".a-side");
 const bSideinput = document.querySelector(".b-side");
 const previewButton = document.querySelector(".preview");
 const reset = document.querySelector(".reset");
-const textField = document.querySelector(".textarea");
+const textFieldTop = document.querySelector(".top");
+const textFieldCenter = document.querySelector(".center");
+const textFieldBottom = document.querySelector(".bottom");
 const saveAsGif = document.querySelector(".make-gif");
 const canvas = document.querySelector("#render");
 const modalWindow = document.querySelector(".modal");
 const progress = document.querySelector("#progress");
 
 let capturer,
+  topText,
   text,
+  bottomText,
+  textMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffd700,
+    metalness: 0.5,
+    roughness: 0.5,
+  }),
   bTextures = [],
-  cardText = "Placeholder",
+  cardTextTop = "The",
+  cardTextCenter = "Placeholder",
+  cardTextBottom = "Family",
   gifIsReady = false,
-  centerOffset = 0,
   rotated = false,
-  font,
+  fontLoader = new THREE.FontLoader(),
+  centerFont,
+  topBottomFont,
   renderer,
   camera,
   scene,
@@ -67,10 +79,29 @@ const initThree = () => {
 };
 
 const initListeners = () => {
-  textField.addEventListener("input", ({ target }) => {
+  textFieldTop.addEventListener("input", ({ target }) => {
+    card.remove(topText);
+    topText.geometry.dispose();
+    cardTextTop = target.value;
+    card.rotation.y = 0;
+    renderer.render(scene, camera);
+    makeTopText();
+  });
+  textFieldCenter.addEventListener("input", ({ target }) => {
     card.remove(text);
-    cardText = target.value;
-    makeText();
+    text.geometry.dispose();
+    cardTextCenter = target.value;
+    card.rotation.y = 0;
+    renderer.render(scene, camera);
+    makeCenterText();
+  });
+  textFieldBottom.addEventListener("input", ({ target }) => {
+    card.remove(bottomText);
+    bottomText.geometry.dispose();
+    cardTextBottom = target.value;
+    card.rotation.y = 0;
+    renderer.render(scene, camera);
+    makeBottomText();
   });
 
   previewButton.addEventListener("click", (e) => {
@@ -79,6 +110,8 @@ const initListeners = () => {
       return;
     }
     if (!rotated) {
+      card.rotation.y = 0;
+      capturer.reset();
       capturer.start();
       rotated = true;
       animate();
@@ -89,15 +122,30 @@ const initListeners = () => {
     card.remove(text);
     capturer.reset();
     rotated = false;
-    cardText = "Placeholder";
-    textField.value = cardText;
-    makeText();
+    card.remove(topText);
+    topText.geometry.dispose();
+    cardTextTop = "The";
+    textFieldTop.value = cardTextTop;
+    makeTopText();
+    card.remove(text);
+    text.geometry.dispose();
+    cardTextCenter = "Placeholder";
+    textFieldCenter.value = cardTextCenter;
+    makeCenterText();
+    card.remove(bottomText);
+    bottomText.geometry.dispose();
+    cardTextBottom = "Family";
+    textFieldBottom.value = cardTextBottom;
+    makeBottomText();
+    if (aCardSide.material.map) aCardSide.material.map.dispose();
     aCardSide.material.map = null;
     aCardSide.material.needsUpdate = true;
-    bCardSide.material.map = null;
+    if (bCardSide.material.map) bCardSide.material.map.dispose();
     bCardSide.material.needsUpdate = true;
+    bCardSide.material.map = null;
     bTextures = [];
     gifIsReady = false;
+    card.rotation.y = 0;
     renderer.render(scene, camera);
   });
 
@@ -125,6 +173,7 @@ const initListeners = () => {
       }
       aCardSide.material.map = t;
       aCardSide.material.needsUpdate = true;
+      card.rotation.y = 0;
       renderer.render(scene, camera);
     });
     gifIsReady = false;
@@ -151,8 +200,11 @@ const initListeners = () => {
         bTextures.push(t);
         bCardSide.material.map = bTextures[0];
         bCardSide.material.needsUpdate = true;
+        card.rotation.y = Math.PI;
+        renderer.render(scene, camera);
       });
     }
+    gifIsReady = false;
     this.value = null;
   });
 
@@ -183,6 +235,7 @@ const changeBTexture = () => {
     rotated = false;
     capturer.stop();
     gifIsReady = true;
+    bCardSide.material.map = bTextures[0];
   }
 
   bCardSide.material.needsUpdate = true;
@@ -194,9 +247,14 @@ const checkLoading = (e) => {
 };
 
 const init = () => {
-  new THREE.FontLoader().load("./helvetiker_bold.typeface.json", (response) => {
-    font = response;
-    makeText();
+  fontLoader.load("./helvetiker_italic.typeface.json", (response) => {
+    topBottomFont = response;
+    makeTopText();
+    makeBottomText();
+    fontLoader.load("./helvetiker_bold.typeface.json", (response) => {
+      centerFont = response;
+      makeCenterText();
+    });
   });
 
   capturer = new CCapture({
@@ -208,32 +266,66 @@ const init = () => {
   initListeners();
 };
 
-const makeText = () => {
+const getTextOffset = (text) =>
+  -0.5 * (text.boundingBox.max.x - text.boundingBox.min.x);
+
+const makeTopText = () => {
   gifIsReady = false;
-  const geometry = new THREE.TextGeometry(cardText, {
-    font: font,
+  const gTop = new THREE.TextGeometry(cardTextTop, {
+    font: topBottomFont,
+    size: 1,
+    height: 0.1,
+  });
+
+  gTop.computeBoundingBox();
+
+  topText = new THREE.Mesh(gTop, textMaterial);
+
+  topText.position.set(getTextOffset(gTop), 3, 0.1);
+
+  card.add(topText);
+  renderer.render(scene, camera);
+};
+
+const makeCenterText = () => {
+  gifIsReady = false;
+
+  const gCeneter = new THREE.TextGeometry(cardTextCenter, {
+    font: centerFont,
     size: 1.6,
     height: 0.1,
   });
-  geometry.computeBoundingBox();
-  centerOffset =
-    -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
-  text = new THREE.Mesh(
-    geometry,
-    new THREE.MeshStandardMaterial({
-      color: 0xffd700,
-      metalness: 0.5,
-      roughness: 0.5,
-    })
-  );
-  text.position.set(centerOffset, 0, 0.1);
+
+  gCeneter.computeBoundingBox();
+
+  text = new THREE.Mesh(gCeneter, textMaterial);
+
+  text.position.set(getTextOffset(gCeneter), 0, 0.1);
   card.add(text);
+  renderer.render(scene, camera);
+};
+
+const makeBottomText = () => {
+  gifIsReady = false;
+  const gBottom = new THREE.TextGeometry(cardTextBottom, {
+    font: topBottomFont,
+    size: 1,
+    height: 0.1,
+  });
+
+  gBottom.computeBoundingBox();
+
+  bottomText = new THREE.Mesh(gBottom, textMaterial);
+
+  bottomText.position.set(getTextOffset(gBottom), -3, 0.1);
+
+  card.add(bottomText);
   renderer.render(scene, camera);
 };
 
 const animate = function () {
   id = requestAnimationFrame(animate);
-  card.rotation.y += 0.015;
+  card.rotation.y += 0.15;
   changeBTexture();
   renderer.render(scene, camera);
   capturer.capture(renderer.domElement);
