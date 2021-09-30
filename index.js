@@ -2,6 +2,7 @@ import * as THREE from "./js/three.module.js";
 const aSideinput = document.querySelector(".a-side");
 const bSideinput = document.querySelector(".b-side");
 const previewButton = document.querySelector(".preview");
+const reset = document.querySelector(".reset");
 const textField = document.querySelector(".textarea");
 const saveAsGif = document.querySelector(".make-gif");
 const canvas = document.querySelector("#render");
@@ -83,6 +84,21 @@ const initListeners = () => {
     }
   });
 
+  reset.addEventListener("click", () => {
+    card.remove(text);
+    capturer.reset();
+    rotated = false;
+    cardText = "Placeholder";
+    textField.value = cardText;
+    makeText();
+    aCardSide.material.map = null;
+    aCardSide.material.needsUpdate = true;
+    bCardSide.material.map = null;
+    bCardSide.material.needsUpdate = true;
+    bTextures = [];
+    renderer.render(scene, camera);
+  });
+
   const centerImage = (t) => {
     const aspectOfPlane = cardSize.x / cardSize.y;
     const aspectOfImage = t.image.width / t.image.height;
@@ -99,6 +115,7 @@ const initListeners = () => {
   };
 
   aSideinput.addEventListener("change", function (e) {
+    if (!this.files.length) return;
     let userImageURL = URL.createObjectURL(this.files[0]);
     textureLoader.load(userImageURL, (t) => {
       if (t.image.width > t.image.height) {
@@ -108,11 +125,18 @@ const initListeners = () => {
       aCardSide.material.needsUpdate = true;
       renderer.render(scene, camera);
     });
+    this.value = null;
   });
 
   bSideinput.addEventListener("change", function (e) {
-    if (this.files.length > 3) alert("Max 3 files");
-    if (this.files.length < 3) alert("Min 3 files");
+    if (this.files.length > 3) {
+      alert("Max 3 files");
+      return;
+    }
+    if (this.files.length < 3) {
+      alert("Min 3 files");
+      return;
+    }
     for (let i = 0; i < 3; i++) {
       let userImageURL = URL.createObjectURL(this.files[i]);
       textureLoader.load(userImageURL, (t) => {
@@ -124,6 +148,7 @@ const initListeners = () => {
         bCardSide.material.needsUpdate = true;
       });
     }
+    this.value = null;
   });
 
   saveAsGif.addEventListener("click", () => {

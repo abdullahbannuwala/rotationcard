@@ -730,9 +730,9 @@
         _log("clear Interval");
         return null;
       };
-      window.requestAnimationFrame = function (callback) {
-        _requestAnimationFrameCallbacks.push(callback);
-      };
+      // window.requestAnimationFrame = function (callback) {
+      //   _requestAnimationFrameCallbacks.push(callback);
+      // };
       window.performance.now = function () {
         return _performanceTime;
       };
@@ -951,10 +951,6 @@
             _encoder.filename + _encoder.extension,
             _encoder.mimeType
           );
-          _encoder.encoder.frames = [];
-          _encoder.encoder.imageParts = [];
-          _encoder.encoder.finishedFrames = 0;
-          _encoder.encoder.nextFrame = 0;
           return false;
         };
       }
@@ -980,12 +976,25 @@
       _emit("progress", progress);
     }
 
+    function _reset() {
+      _encoder.encoder.frames = [];
+      _encoder.encoder.imageParts = [];
+      _encoder.encoder.finishedFrames = 0;
+      _encoder.encoder.nextFrame = 0;
+    }
+
+    function _log() {
+      return _encoder;
+    }
+
     return {
       start: _start,
       capture: _capture,
       stop: _stop,
       save: _save,
       on: _on,
+      reset: _reset,
+      log: _log,
     };
   }
 
