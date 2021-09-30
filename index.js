@@ -76,6 +76,7 @@ const initThree = () => {
   card.add(aCardSide);
   card.add(bCardSide);
   scene.add(card);
+  //disableElements();
 };
 
 const initListeners = () => {
@@ -118,7 +119,8 @@ const initListeners = () => {
     }
   });
 
-  reset.addEventListener("click", () => {
+  reset.addEventListener("click", ({ target }) => {
+    if (target.classList.contains("disabled")) return;
     card.remove(text);
     capturer.reset();
     rotated = false;
@@ -208,9 +210,11 @@ const initListeners = () => {
     this.value = null;
   });
 
-  saveAsGif.addEventListener("click", () => {
+  saveAsGif.addEventListener("click", ({ target }) => {
     if (!rotated && gifIsReady) {
       capturer.save();
+    } else if (target.classList.contains("disabled")) {
+      return;
     } else {
       alert("Make a preview");
     }
@@ -219,10 +223,37 @@ const initListeners = () => {
   initThree();
 };
 
+const disableElements = () => {
+  textFieldTop.disabled = true;
+  textFieldCenter.disabled = true;
+  textFieldBottom.disabled = true;
+  aSideinput.disabled = true;
+  aSideinput.parentElement.classList.add("disabled");
+  bSideinput.disabled = true;
+  bSideinput.parentElement.classList.add("disabled");
+  reset.classList.add("disabled");
+  previewButton.classList.add("disabled");
+  saveAsGif.classList.add("disabled");
+  saveAsGif.textContent = "Wait";
+};
+
+const enableElements = () => {
+  textFieldTop.disabled = false;
+  textFieldCenter.disabled = false;
+  textFieldBottom.disabled = false;
+  aSideinput.disabled = false;
+  aSideinput.parentElement.classList.remove("disabled");
+  bSideinput.disabled = false;
+  bSideinput.parentElement.classList.remove("disabled");
+  reset.classList.remove("disabled");
+  previewButton.classList.remove("disabled");
+  saveAsGif.classList.remove("disabled");
+  saveAsGif.textContent = "Download as Gif";
+};
 const changeBTexture = () => {
   gifIsReady = false;
-  let r = card.rotation.y;
-  if (r >= Math.PI * 2 && r <= Math.PI * 2 * 2) {
+  disableElements();
+  if (card.rotation.y >= Math.PI * 2 && card.rotation.y <= Math.PI * 2 * 2) {
     bCardSide.material.map = bTextures[1];
   }
   if (card.rotation.y >= Math.PI * 2 * 2) {
@@ -236,6 +267,7 @@ const changeBTexture = () => {
     capturer.stop();
     gifIsReady = true;
     bCardSide.material.map = bTextures[0];
+    enableElements();
   }
 
   bCardSide.material.needsUpdate = true;
@@ -325,7 +357,7 @@ const makeBottomText = () => {
 
 const animate = function () {
   id = requestAnimationFrame(animate);
-  card.rotation.y += 0.015;
+  card.rotation.y += 0.15;
   changeBTexture();
   renderer.render(scene, camera);
   capturer.capture(renderer.domElement);
