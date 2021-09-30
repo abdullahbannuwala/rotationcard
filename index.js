@@ -325,7 +325,7 @@ const makeBottomText = () => {
 
 const animate = function () {
   id = requestAnimationFrame(animate);
-  card.rotation.y += 0.15;
+  card.rotation.y += 0.015;
   changeBTexture();
   renderer.render(scene, camera);
   capturer.capture(renderer.domElement);
