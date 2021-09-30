@@ -13,6 +13,7 @@ let capturer,
   text,
   bTextures = [],
   cardText = "Placeholder",
+  gifIsReady = false,
   centerOffset = 0,
   rotated = false,
   font,
@@ -96,6 +97,7 @@ const initListeners = () => {
     bCardSide.material.map = null;
     bCardSide.material.needsUpdate = true;
     bTextures = [];
+    gifIsReady = false;
     renderer.render(scene, camera);
   });
 
@@ -125,15 +127,18 @@ const initListeners = () => {
       aCardSide.material.needsUpdate = true;
       renderer.render(scene, camera);
     });
+    gifIsReady = false;
     this.value = null;
   });
 
   bSideinput.addEventListener("change", function (e) {
     if (this.files.length > 3) {
+      gifIsReady = false;
       alert("Max 3 files");
       return;
     }
     if (this.files.length < 3) {
+      gifIsReady = false;
       alert("Min 3 files");
       return;
     }
@@ -152,13 +157,18 @@ const initListeners = () => {
   });
 
   saveAsGif.addEventListener("click", () => {
-    if (!rotated) capturer.save();
+    if (!rotated && gifIsReady) {
+      capturer.save();
+    } else {
+      alert("Make a preview");
+    }
   });
 
   initThree();
 };
 
 const changeBTexture = () => {
+  gifIsReady = false;
   let r = card.rotation.y;
   if (r >= Math.PI * 2 && r <= Math.PI * 2 * 2) {
     bCardSide.material.map = bTextures[1];
@@ -172,6 +182,7 @@ const changeBTexture = () => {
     card.rotation.y = 0;
     rotated = false;
     capturer.stop();
+    gifIsReady = true;
   }
 
   bCardSide.material.needsUpdate = true;
@@ -198,6 +209,7 @@ const init = () => {
 };
 
 const makeText = () => {
+  gifIsReady = false;
   const geometry = new THREE.TextGeometry(cardText, {
     font: font,
     size: 1.6,
