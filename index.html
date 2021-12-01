@@ -5,69 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <style>
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.4);
-        justify-content: center;
-      }
-      .modal #progress {
-        align-self: center;
-      }
-      .wrap {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .button {
-        overflow: hidden;
-        color: black;
-        border: 1px solid black;
-        width: 220px;
-        position: relative;
-        padding: 8px 10px 8px 10px;
-        text-align: center;
-        margin-top: 5px;
-        box-sizing: border-box;
-      }
-      .disabled {
-        color: gray;
-        border-color: gray;
-      }
-      #viewer {
-        display: flex;
-        margin-top: 10px;
-      }
-      .controls {
-        width: 70px;
-        height: 35px;
-        margin: 0 10px;
-      }
-
-      .file-upload {
-        opacity: 0;
-        width: 220px;
-        height: 35px;
-        position: absolute;
-        top: 0px;
-        left: 0px;
-      }
-
-      #render {
-        width: 500px;
-        height: 600px;
-      }
-      .make-gif {
-        align-self: flex-end;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"
+    />
+    <link rel="stylesheet" href="./css/main.css" />
+    <link rel="stylesheet" href="./css/slick.css" />
   </head>
   <body>
     <div class="modal">
@@ -86,13 +30,13 @@
         Bottom
         <input type="text" class="textarea bottom" value="Family" />
       </div>
-      <div class="button">
+      <!-- <div class="button">
         <input
           class="file-upload a-side"
           type="file"
           accept=".jpg, .jpeg, .png, .dms"
         />Choose image for Static Side
-      </div>
+      </div> -->
       <div class="button">
         <input
           class="file-upload b-side"
@@ -107,7 +51,50 @@
         <div class="button controls reset">Reset</div>
       </div>
       <div class="button make-gif">Download as Gif</div>
+      <div class="slider_block">
+        <div class="slider">
+          <img src="./side-templates/12121212.png" alt="" />
+          <img
+            src="https://via.placeholder.com/1500x2100?text=Placeholder"
+            alt=""
+          />
+          <img src="./side-templates/6666.png" alt="" />
+          <img
+            src="https://via.placeholder.com/1500x2100?text=Placeholder+Placeholder"
+            alt=""
+          />
+          <img src="./side-templates/Frame-347.png" alt="" />
+          <img
+            src="https://via.placeholder.com/1500x2100?text=Placeholder+Placeholder+Placeholder"
+            alt=""
+          />
+        </div>
+      </div>
     </div>
+    <script
+      src="https://code.jquery.com/jquery-2.2.4.min.js"
+      integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      type="text/javascript"
+      src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"
+    ></script>
+    <script>
+      $(".slider").slick({
+        //infinite: false,
+        slidesToShow: 3,
+        slidesToScroll: 3,
+        //arrows: true,
+        //centerMode: true,
+        //centerPadding: "20px",
+        //adaptiveHeight: true,
+        variableWidth: true,
+        //speed: 500,
+        //fade: false,
+        //cssEase: "linear",
+      });
+    </script>
     <script src="./js/CCapture.js"></script>
     <script src="./js/gif.js"></script>
     <script src="./js/download.js"></script>

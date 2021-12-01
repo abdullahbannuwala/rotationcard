@@ -1,5 +1,5 @@
 import * as THREE from "./js/three.module.js";
-const aSideinput = document.querySelector(".a-side");
+//const aSideinput = document.querySelector(".a-side");
 const bSideinput = document.querySelector(".b-side");
 const previewButton = document.querySelector(".preview");
 const reset = document.querySelector(".reset");
@@ -166,21 +166,21 @@ const initListeners = () => {
     t.offset.set((1 - xScale) / 2, (1 - yScale) / 2);
   };
 
-  aSideinput.addEventListener("change", function (e) {
-    if (!this.files.length) return;
-    let userImageURL = URL.createObjectURL(this.files[0]);
-    textureLoader.load(userImageURL, (t) => {
-      if (t.image.width > t.image.height) {
-        centerImage(t);
-      }
-      aCardSide.material.map = t;
-      aCardSide.material.needsUpdate = true;
-      card.rotation.y = 0;
-      renderer.render(scene, camera);
-    });
-    gifIsReady = false;
-    this.value = null;
-  });
+  // aSideinput.addEventListener("change", function (e) {
+  //   if (!this.files.length) return;
+  //   let userImageURL = URL.createObjectURL(this.files[0]);
+  //   textureLoader.load(userImageURL, (t) => {
+  //     if (t.image.width > t.image.height) {
+  //       centerImage(t);
+  //     }
+  //     aCardSide.material.map = t;
+  //     aCardSide.material.needsUpdate = true;
+  //     card.rotation.y = 0;
+  //     renderer.render(scene, camera);
+  //   });
+  //   gifIsReady = false;
+  //   this.value = null;
+  // });
 
   bSideinput.addEventListener("change", function (e) {
     if (this.files.length > 3) {
@@ -227,8 +227,8 @@ const disableElements = () => {
   textFieldTop.disabled = true;
   textFieldCenter.disabled = true;
   textFieldBottom.disabled = true;
-  aSideinput.disabled = true;
-  aSideinput.parentElement.classList.add("disabled");
+  //aSideinput.disabled = true;
+  //aSideinput.parentElement.classList.add("disabled");
   bSideinput.disabled = true;
   bSideinput.parentElement.classList.add("disabled");
   reset.classList.add("disabled");
@@ -241,8 +241,8 @@ const enableElements = () => {
   textFieldTop.disabled = false;
   textFieldCenter.disabled = false;
   textFieldBottom.disabled = false;
-  aSideinput.disabled = false;
-  aSideinput.parentElement.classList.remove("disabled");
+  //aSideinput.disabled = false;
+  //aSideinput.parentElement.classList.remove("disabled");
   bSideinput.disabled = false;
   bSideinput.parentElement.classList.remove("disabled");
   reset.classList.remove("disabled");
@@ -364,3 +364,15 @@ const animate = function () {
 };
 
 init();
+
+$(".slider").on("click", function (e) {
+  if (e.target.tagName === "IMG") {
+    textureLoader.load(e.target.src, (t) => {
+      aCardSide.material.map = t;
+      aCardSide.material.needsUpdate = true;
+      card.rotation.y = 0;
+      renderer.render(scene, camera);
+    });
+    gifIsReady = false;
+  }
+});
