@@ -38,7 +38,7 @@ let capturer,
   card;
 
 const textureLoader = new THREE.TextureLoader();
-const cardSize = { x: 15, y: 25 };
+const cardSize = { x: 15, y: 21 };
 
 const initThree = () => {
   scene = new THREE.Scene();
