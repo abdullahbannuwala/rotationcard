@@ -77,12 +77,10 @@ const initThree = () => {
   const geometry = new THREE.PlaneGeometry(cardSize.x, cardSize.y);
 
   aCardSide = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
-  bCardSide = new THREE.Mesh(
-    geometry,
-    new THREE.MeshBasicMaterial({ side: THREE.BackSide })
-  );
+  bCardSide = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial());
   aCardSide.position.z = 0.1;
   bCardSide.position.z = -0.1;
+  bCardSide.rotation.y = Math.PI;
   card.add(aCardSide);
   card.add(bCardSide);
   scene.add(card);
