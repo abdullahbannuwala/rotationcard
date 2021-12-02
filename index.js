@@ -14,6 +14,9 @@ const modalWindow = document.querySelector(".modal");
 const progress = document.querySelector("#progress");
 
 let capturer,
+  recordedChunks,
+  mediaRecorder,
+  videoFormat = false,
   topText,
   text,
   bottomText,
@@ -86,6 +89,26 @@ const initThree = () => {
   //disableElements();
 };
 
+const download = () => {
+  var blob = new Blob(recordedChunks, {
+    type: "video/mp4"
+  });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = new Date() + ".mp4";
+  a.click();
+  window.URL.revokeObjectURL(url);
+  a.href = ''
+}
+
+const handleDataAvailable = (event) => {
+  if (event.data.size > 0) {
+    recordedChunks.push(event.data);
+    download();
+  }
+}
+
 const initListeners = () => {
   textFieldTop.addEventListener("input", ({ target }) => {
     card.remove(topText);
@@ -95,6 +118,7 @@ const initListeners = () => {
     renderer.render(scene, camera);
     makeTopText();
   });
+
   textFieldCenter.addEventListener("input", ({ target }) => {
     card.remove(text);
     text.geometry.dispose();
@@ -103,6 +127,7 @@ const initListeners = () => {
     renderer.render(scene, camera);
     makeCenterText();
   });
+
   textFieldBottom.addEventListener("input", ({ target }) => {
     card.remove(bottomText);
     bottomText.geometry.dispose();
@@ -236,6 +261,25 @@ const initListeners = () => {
     }
   });
 
+  saveAsVideo.addEventListener("click", ({ target }) => {
+    if (!bTextures.length) {
+      alert("Choose images for change side");
+      return;
+    }
+    
+    if (!rotated) {
+      videoFormat = true;
+      card.rotation.y = 0;
+      rotated = true;
+      let stream = canvas.captureStream();
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = handleDataAvailable;
+      mediaRecorder.start();
+      animate()
+    }
+  });
+
   initThree();
 };
 
@@ -251,6 +295,8 @@ const disableElements = () => {
   previewButton.classList.add("disabled");
   saveAsGif.classList.add("disabled");
   saveAsGif.textContent = "Wait";
+  saveAsVideo.classList.add("disabled");
+  saveAsVideo.textContent = "Wait";
 };
 
 const enableElements = () => {
@@ -265,8 +311,11 @@ const enableElements = () => {
   previewButton.classList.remove("disabled");
   saveAsGif.classList.remove("disabled");
   saveAsGif.textContent = "Download as Gif";
+  saveAsVideo.classList.remove("disabled");
+  saveAsVideo.textContent = "Download as video";
 };
-const changeBTexture = () => {
+
+const changeBTextureGif = () => {
   gifIsReady = false;
   disableElements();
   if (card.rotation.y >= Math.PI * 2 && card.rotation.y <= Math.PI * 2 * 2) {
@@ -282,6 +331,28 @@ const changeBTexture = () => {
     rotated = false;
     capturer.stop();
     gifIsReady = true;
+    bCardSide.material.map = bTextures[0];
+    enableElements();
+  }
+
+  bCardSide.material.needsUpdate = true;
+};
+
+const changeBTextureVideo = () => {
+  disableElements();
+  if (card.rotation.y >= Math.PI * 2 && card.rotation.y <= Math.PI * 2 * 2) {
+    bCardSide.material.map = bTextures[1];
+  }
+  if (card.rotation.y >= Math.PI * 2 * 2) {
+    bCardSide.material.map = bTextures[2];
+  }
+  if (card.rotation.y >= Math.PI * 2 * 3) {
+    bCardSide.material.map = bTextures[2];
+    window.cancelAnimationFrame(id);
+    card.rotation.y = 0;
+    rotated = false;
+    mediaRecorder.stop()
+    videoFormat = false;
     bCardSide.material.map = bTextures[0];
     enableElements();
   }
@@ -394,7 +465,7 @@ const makeLastText = () => {
 const animate = function () {
   id = requestAnimationFrame(animate);
   card.rotation.y += 0.15;
-  changeBTexture();
+  videoFormat ? changeBTextureVideo() : changeBTextureGif();
   renderer.render(scene, camera);
   capturer.capture(renderer.domElement);
 };
