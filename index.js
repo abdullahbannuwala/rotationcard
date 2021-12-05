@@ -33,12 +33,13 @@ let capturer,
   cardTextTop = "The",
   cardTextCenter = "Placeholder",
   cardTextBottom = "Family",
-  cardTextLast = "Hopper",
+  cardTextLast = "poppins",
   gifIsReady = false,
   rotated = false,
   fontLoader = new THREE.FontLoader(),
   centerFont,
   topBottomFont,
+  lastFont,
   renderer,
   camera,
   scene,
@@ -108,6 +109,7 @@ const handleDataAvailable = (event) => {
 }
 
 const initListeners = () => {
+
   textFieldTop.addEventListener("input", ({ target }) => {
     card.remove(topText);
     topText.geometry.dispose();
@@ -363,17 +365,32 @@ const checkLoading = (e) => {
   progress.value = e;
 };
 
+const asyncFontLoading = (url) => {
+  return new Promise((res, rej) =>{
+    fontLoader.load(url, (font) => {
+      res(font),
+      xhr => console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ),
+      err => rej(err)
+    })
+  })
+}
+
 const init = () => {
-  fontLoader.load("./helvetiker_italic.typeface.json", (response) => {
-    topBottomFont = response;
-    makeTopText();
-    makeBottomText();
-    fontLoader.load("./helvetiker_bold.typeface.json", (response) => {
-      centerFont = response;
+  Promise.all([
+    asyncFontLoading("./fonts/helvetiker_italic.json"),
+    asyncFontLoading("./fonts/helvetiker_bold.json"),
+    asyncFontLoading("./fonts/Poppins_italic.json")])
+    .then(res =>{
+      topBottomFont = res[0];
+      centerFont = res[1]
+      lastFont = res[2]
+    }, err => console.error(err))
+    .then(() => {
+      makeTopText();
       makeCenterText();
+      makeBottomText();
       makeLastText();
-    });
-  });
+    })
 
   capturer = new CCapture({
     format: "gif",
@@ -391,7 +408,7 @@ const makeTopText = () => {
   gifIsReady = false;
   const gTop = new THREE.TextGeometry(cardTextTop, {
     font: topBottomFont,
-    size: 1,
+    size: 0.7,
     height: 0.1,
   });
 
@@ -399,7 +416,7 @@ const makeTopText = () => {
 
   topText = new THREE.Mesh(gTop, textMaterial);
 
-  topText.position.set(getTextOffset(gTop), 3, 0.1);
+  topText.position.set(getTextOffset(gTop), 2.3, 0.1);
 
   card.add(topText);
   renderer.render(scene, camera);
@@ -410,7 +427,7 @@ const makeCenterText = () => {
 
   const gCeneter = new THREE.TextGeometry(cardTextCenter, {
     font: centerFont,
-    size: 1.6,
+    size: 1.42,
     height: 0.1,
   });
 
@@ -418,7 +435,7 @@ const makeCenterText = () => {
 
   text = new THREE.Mesh(gCeneter, textMaterial);
 
-  text.position.set(getTextOffset(gCeneter), 0, 0.1);
+  text.position.set(getTextOffset(gCeneter), 0.5, 0.1);
   card.add(text);
   renderer.render(scene, camera);
 };
@@ -427,7 +444,7 @@ const makeBottomText = () => {
   gifIsReady = false;
   const gBottom = new THREE.TextGeometry(cardTextBottom, {
     font: topBottomFont,
-    size: 1,
+    size: 0.7,
     height: 0.1,
   });
 
@@ -435,7 +452,7 @@ const makeBottomText = () => {
 
   bottomText = new THREE.Mesh(gBottom, textMaterial);
 
-  bottomText.position.set(getTextOffset(gBottom), -2.5, 0.1);
+  bottomText.position.set(getTextOffset(gBottom), -0.5, 0.1);
 
   card.add(bottomText);
   renderer.render(scene, camera);
@@ -445,8 +462,8 @@ const makeLastText = () => {
   gifIsReady = false;
 
   const gLast = new THREE.TextGeometry(cardTextLast, {
-    font: topBottomFont,
-    size: 1,
+    font: lastFont,
+    size: 1.2,
     height: 0.1,
   });
 
@@ -454,7 +471,7 @@ const makeLastText = () => {
 
   lastText = new THREE.Mesh(gLast, lastTextMaterial);
 
-  lastText.position.set(getTextOffset(gLast), -5, 0.1);
+  lastText.position.set(getTextOffset(gLast), -3.2, 0.1);
 
   card.add(lastText);
   renderer.render(scene, camera);
