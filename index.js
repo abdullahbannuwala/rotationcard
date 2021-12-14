@@ -22,16 +22,16 @@ let capturer,
   bottomText,
   lastText,
   textMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffd700,
-    metalness: 0.5,
-    roughness: 0.5,
+    color: 0x8c6b3c,
+    metalness: 0.6,
+    roughness: 0.4,
   }),
   lastTextMaterial = new THREE.MeshBasicMaterial({
     color: 0xd76863,
   }),
   bTextures = [],
   cardTextTop = "The",
-  cardTextCenter = "Placeholder",
+  cardTextCenter = "WILLIAMS",
   cardTextBottom = "Family",
   cardTextLast = "poppins",
   gifIsReady = false,
@@ -40,6 +40,11 @@ let capturer,
   centerFont,
   topBottomFont,
   lastFont,
+  outlineMaterial = new THREE.MeshStandardMaterial({
+    color: 0x8c6b3c,
+    metalness: 0.6,
+    roughness: 0.4,
+  }),
   renderer,
   camera,
   scene,
@@ -64,21 +69,27 @@ const initThree = () => {
   renderer.setClearColor(0x000000);
 
   camera.position.z = 39;
-  let spot = new THREE.SpotLight();
-  spot.position.z = 30;
-  scene.add(spot);
+  let rightLight = new THREE.PointLight(0xffffff, 1, 60);
+  rightLight.position.set(10, 0, 50);
+  scene.add(rightLight);
+
+  let leftLight = new THREE.PointLight(0xffffff, 1, 60);
+  leftLight.position.set(-10, 0, 50);
+  scene.add(leftLight);
+
+  scene.add(new THREE.AmbientLight());
 
   card = new THREE.Group();
   card.add(
     new THREE.Mesh(
-      new THREE.BoxBufferGeometry(cardSize.x + 0.1, cardSize.y + 0.1, 0.1),
-      new THREE.MeshBasicMaterial({ color: 0xff0000 })
+      new THREE.BoxBufferGeometry(cardSize.x + 0.4, cardSize.y + 0.4, 0.15),
+      outlineMaterial
     )
   );
   const geometry = new THREE.PlaneGeometry(cardSize.x, cardSize.y);
 
   aCardSide = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
-  bCardSide = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial());
+  bCardSide = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial());
   aCardSide.position.z = 0.1;
   bCardSide.position.z = -0.1;
   bCardSide.rotation.y = Math.PI;
@@ -90,7 +101,7 @@ const initThree = () => {
 
 const download = () => {
   var blob = new Blob(recordedChunks, {
-    type: "video/mp4"
+    type: "video/mp4",
   });
   var url = URL.createObjectURL(blob);
   var a = document.createElement("a");
@@ -98,18 +109,17 @@ const download = () => {
   a.download = new Date() + ".mp4";
   a.click();
   window.URL.revokeObjectURL(url);
-  a.href = ''
-}
+  a.href = "";
+};
 
 const handleDataAvailable = (event) => {
   if (event.data.size > 0) {
     recordedChunks.push(event.data);
     download();
   }
-}
+};
 
 const initListeners = () => {
-
   textFieldTop.addEventListener("input", ({ target }) => {
     card.remove(topText);
     topText.geometry.dispose();
@@ -266,7 +276,7 @@ const initListeners = () => {
       alert("Choose images for change side");
       return;
     }
-    
+
     if (!rotated) {
       videoFormat = true;
       card.rotation.y = 0;
@@ -276,7 +286,7 @@ const initListeners = () => {
       mediaRecorder = new MediaRecorder(stream);
       mediaRecorder.ondataavailable = handleDataAvailable;
       mediaRecorder.start();
-      animate()
+      animate();
     }
   });
 
@@ -351,7 +361,7 @@ const changeBTextureVideo = () => {
     window.cancelAnimationFrame(id);
     card.rotation.y = 0;
     rotated = false;
-    mediaRecorder.stop()
+    mediaRecorder.stop();
     videoFormat = false;
     bCardSide.material.map = bTextures[0];
     enableElements();
@@ -366,31 +376,35 @@ const checkLoading = (e) => {
 };
 
 const asyncFontLoading = (url) => {
-  return new Promise((res, rej) =>{
+  return new Promise((res, rej) => {
     fontLoader.load(url, (font) => {
       res(font),
-      xhr => console.log( (xhr.loaded / xhr.total * 100) + '% loaded' ),
-      err => rej(err)
-    })
-  })
-}
+        (xhr) => console.log((xhr.loaded / xhr.total) * 100 + "% loaded"),
+        (err) => rej(err);
+    });
+  });
+};
 
 const init = () => {
   Promise.all([
     asyncFontLoading("./fonts/helvetiker_italic.json"),
     asyncFontLoading("./fonts/helvetiker_bold.json"),
-    asyncFontLoading("./fonts/Poppins_italic.json")])
-    .then(res =>{
-      topBottomFont = res[0];
-      centerFont = res[1]
-      lastFont = res[2]
-    }, err => console.error(err))
+    asyncFontLoading("./fonts/Poppins_italic.json"),
+  ])
+    .then(
+      (res) => {
+        topBottomFont = res[0];
+        centerFont = res[1];
+        lastFont = res[2];
+      },
+      (err) => console.error(err)
+    )
     .then(() => {
       makeTopText();
       makeCenterText();
       makeBottomText();
       makeLastText();
-    })
+    });
 
   capturer = new CCapture({
     format: "gif",
@@ -409,14 +423,14 @@ const makeTopText = () => {
   const gTop = new THREE.TextGeometry(cardTextTop, {
     font: topBottomFont,
     size: 0.7,
-    height: 0.1,
+    height: 0.3,
   });
 
   gTop.computeBoundingBox();
 
   topText = new THREE.Mesh(gTop, textMaterial);
 
-  topText.position.set(getTextOffset(gTop), 2.3, 0.1);
+  topText.position.set(getTextOffset(gTop), 2.3, 0.3);
 
   card.add(topText);
   renderer.render(scene, camera);
@@ -428,14 +442,14 @@ const makeCenterText = () => {
   const gCeneter = new THREE.TextGeometry(cardTextCenter, {
     font: centerFont,
     size: 1.42,
-    height: 0.1,
+    height: 0.3,
   });
 
   gCeneter.computeBoundingBox();
 
   text = new THREE.Mesh(gCeneter, textMaterial);
 
-  text.position.set(getTextOffset(gCeneter), 0.5, 0.1);
+  text.position.set(getTextOffset(gCeneter), 0.5, 0.3);
   card.add(text);
   renderer.render(scene, camera);
 };
@@ -445,14 +459,14 @@ const makeBottomText = () => {
   const gBottom = new THREE.TextGeometry(cardTextBottom, {
     font: topBottomFont,
     size: 0.7,
-    height: 0.1,
+    height: 0.3,
   });
 
   gBottom.computeBoundingBox();
 
   bottomText = new THREE.Mesh(gBottom, textMaterial);
 
-  bottomText.position.set(getTextOffset(gBottom), -0.5, 0.1);
+  bottomText.position.set(getTextOffset(gBottom), -0.5, 0.3);
 
   card.add(bottomText);
   renderer.render(scene, camera);
@@ -479,7 +493,7 @@ const makeLastText = () => {
 
 const animate = function () {
   id = requestAnimationFrame(animate);
-  card.rotation.y += 0.15;
+  card.rotation.y += 0.015;
   videoFormat ? changeBTextureVideo() : changeBTextureGif();
   renderer.render(scene, camera);
   capturer.capture(renderer.domElement);
