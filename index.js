@@ -547,6 +547,10 @@ const initColorPickers = () => {
     color: defaultTextMaterialColor,
     alpha: false,
     editorFormat: "hex",
+    onOpen: () => {
+      card.rotation.y = 0;
+      renderer.render(scene, camera);
+    },
     onChange: (color) => {
       textPicker.style.backgroundColor = color.rgbaString;
       textMaterial.color = new THREE.Color(color.hex.slice(0, 7));
@@ -566,6 +570,10 @@ const initColorPickers = () => {
     color: defaultSloganMaterialColor,
     alpha: false,
     editorFormat: "hex",
+    onOpen: () => {
+      card.rotation.y = 0;
+      renderer.render(scene, camera);
+    },
     onChange: function (color) {
       sloganPicker.style.backgroundColor = color.rgbaString;
       lastTextMaterial.color = new THREE.Color(color.hex.slice(0, 7));
