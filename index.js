@@ -14,6 +14,10 @@ const modalWindow = document.querySelector(".modal");
 const progress = document.querySelector("#progress");
 const textPicker = document.querySelector("#textPicker");
 const sloganPicker = document.querySelector("#sloganPicker");
+const previewCanvas = document.querySelector("#previewCanvas");
+const ctx = previewCanvas.getContext("2d");
+const modal = document.getElementById("myModal");
+const closePreviewModalBtn = document.getElementsByClassName("close")[0];
 
 let capturer,
   recordedChunks,
@@ -62,6 +66,21 @@ const cardSize = { x: 15, y: 21 };
 textPicker.textContent = defaultTextMaterialColor;
 sloganPicker.textContent = defaultSloganMaterialColor;
 
+const previewModal = () => {
+  modal.style.display = "none";
+  document.body.style = "overflow: unset";
+};
+const closePreviewModal = (e) => {
+  if (e.target == modal) {
+    modal.style.display = "none";
+    document.body.style = "overflow: unset";
+  }
+};
+
+closePreviewModalBtn.addEventListener("click", previewModal);
+// When the user clicks anywhere outside of the modal, close it
+window.addEventListener("click", closePreviewModal);
+
 const initThree = () => {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
@@ -73,6 +92,9 @@ const initThree = () => {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setSize(canvas.clientWidth, canvas.clientHeight);
   renderer.setClearColor(0x000000);
+
+  previewCanvas.width = canvas.clientWidth;
+  previewCanvas.height = canvas.clientHeight;
 
   camera.position.z = 39;
   let rightLight = new THREE.PointLight(0xffffff, 1, 60);
@@ -168,6 +190,7 @@ const initListeners = () => {
       return;
     }
     if (!rotated) {
+      modal.style.display = "block";
       card.rotation.y = 0;
       capturer.reset();
       capturer.start();
@@ -284,6 +307,7 @@ const initListeners = () => {
     }
 
     if (!rotated) {
+      modal.style.display = "block";
       videoFormat = true;
       card.rotation.y = 0;
       rotated = true;
@@ -313,6 +337,12 @@ const disableElements = () => {
   saveAsGif.textContent = "Wait";
   saveAsVideo.classList.add("disabled");
   saveAsVideo.textContent = "Wait";
+  document.body.style = "overflow: hidden";
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+  closePreviewModalBtn.classList.add("disabled");
+  closePreviewModalBtn.removeEventListener("click", previewModal);
+  window.removeEventListener("click", closePreviewModal);
 };
 
 const enableElements = () => {
@@ -329,6 +359,9 @@ const enableElements = () => {
   saveAsGif.textContent = "Download as Gif";
   saveAsVideo.classList.remove("disabled");
   saveAsVideo.textContent = "Download as video";
+  closePreviewModalBtn.classList.remove("disabled");
+  closePreviewModalBtn.addEventListener("click", previewModal);
+  window.addEventListener("click", closePreviewModal);
 };
 
 const changeBTextureGif = () => {
@@ -550,10 +583,15 @@ const initColorPickers = () => {
 
 const animate = function () {
   id = requestAnimationFrame(animate);
-  card.rotation.y += 0.015;
-  videoFormat ? changeBTextureVideo() : changeBTextureGif();
+  card.rotation.y += 0.15;
+  if (videoFormat) {
+    changeBTextureVideo();
+  } else {
+    changeBTextureGif();
+    capturer.capture(renderer.domElement);
+  }
   renderer.render(scene, camera);
-  capturer.capture(renderer.domElement);
+  ctx.drawImage(renderer.domElement, 0, 0);
 };
 
 init();
