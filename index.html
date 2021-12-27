@@ -18,44 +18,23 @@
       <progress id="progress" min="0" max="1" value="0"></progress>
     </div>
     <div class="wrap">
-      <div>
-        Top
-        <input type="text" class="textarea top" value="The" maxlength="12" />
+      <div id="grid">
+        <span class="title">Top</span>
+        <input type="text" class="top" value="The" maxlength="12" />
+        <div class="color"></div>
+
+        <span class="title">Center</span>
+        <input type="text" class="center" value="WILLIAMS" maxlength="12" />
+        <div id="textPicker" class="picker"></div>
+
+        <span class="title">Bottom</span>
+        <input type="text" class="bottom" value="Family" maxlength="12" />
+        <div class="color"></div>
+
+        <span class="title">Slogan</span>
+        <input type="text" class="last" value="poppins" maxlength="12" />
+        <div id="sloganPicker" class="picker"></div>
       </div>
-      <div>
-        Center
-        <input
-          type="text"
-          class="textarea center"
-          value="Placeholder"
-          maxlength="12"
-        />
-      </div>
-      <div>
-        Bottom
-        <input
-          type="text"
-          class="textarea bottom"
-          value="Family"
-          maxlength="12"
-        />
-      </div>
-      <div>
-        Slogan
-        <input
-          type="text"
-          class="textarea last"
-          value="Poppins"
-          maxlength="12"
-        />
-      </div>
-      <!-- <div class="button">
-        <input
-          class="file-upload a-side"
-          type="file"
-          accept=".jpg, .jpeg, .png, .dms"
-        />Choose image for Static Side
-      </div> -->
       <div class="button">
         <input
           class="file-upload b-side"
@@ -111,6 +90,7 @@
     <script src="./js/CCapture.js"></script>
     <script src="./js/gif.js"></script>
     <script src="./js/download.js"></script>
+    <script src="https://unpkg.com/vanilla-picker@2"></script>
     <script src="./index.js" type="module"></script>
   </body>
 </html>

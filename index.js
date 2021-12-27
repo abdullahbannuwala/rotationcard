@@ -12,6 +12,8 @@ const saveAsVideo = document.querySelector(".video");
 const canvas = document.querySelector("#render");
 const modalWindow = document.querySelector(".modal");
 const progress = document.querySelector("#progress");
+const textPicker = document.querySelector("#textPicker");
+const sloganPicker = document.querySelector("#sloganPicker");
 
 let capturer,
   recordedChunks,
@@ -21,13 +23,15 @@ let capturer,
   text,
   bottomText,
   lastText,
+  defaultTextMaterialColor = "#8c6b3c",
   textMaterial = new THREE.MeshStandardMaterial({
-    color: 0x8c6b3c,
+    color: defaultTextMaterialColor,
     metalness: 0.6,
     roughness: 0.4,
   }),
+  defaultSloganMaterialColor = "#d76863",
   lastTextMaterial = new THREE.MeshBasicMaterial({
-    color: 0xd76863,
+    color: defaultSloganMaterialColor,
   }),
   bTextures = [],
   cardTextTop = "The",
@@ -55,6 +59,8 @@ let capturer,
 
 const textureLoader = new THREE.TextureLoader();
 const cardSize = { x: 15, y: 21 };
+textPicker.textContent = defaultTextMaterialColor;
+sloganPicker.textContent = defaultSloganMaterialColor;
 
 const initThree = () => {
   scene = new THREE.Scene();
@@ -413,6 +419,7 @@ const init = () => {
     onProgress: (e) => checkLoading(e),
   });
   initListeners();
+  initColorPickers();
 };
 
 const getTextOffset = (text) =>
@@ -489,6 +496,56 @@ const makeLastText = () => {
 
   card.add(lastText);
   renderer.render(scene, camera);
+};
+
+const isDark = (color) => {
+  var rgb = parseInt(color, 16); // convert rrggbb to decimal
+  var r = (rgb >> 16) & 0xff; // extract red
+  var g = (rgb >> 8) & 0xff; // extract green
+  var b = (rgb >> 0) & 0xff; // extract blue
+
+  var luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
+  return luma < 120;
+};
+
+const initColorPickers = () => {
+  var picker = new Picker({
+    parent: textPicker,
+    color: defaultTextMaterialColor,
+    alpha: false,
+    editorFormat: "hex",
+    onChange: (color) => {
+      textPicker.style.backgroundColor = color.rgbaString;
+      textMaterial.color = new THREE.Color(color.hex.slice(0, 7));
+      textMaterial.needsUpdate = true;
+      renderer.render(scene, camera);
+    },
+    onClose: (color) => {
+      textPicker.textContent = color.hex.slice(0, 7);
+      textPicker.style.color = isDark(color.hex.slice(1, 7))
+        ? "white"
+        : "black";
+    },
+  });
+
+  var picker2 = new Picker({
+    parent: sloganPicker,
+    color: defaultSloganMaterialColor,
+    alpha: false,
+    editorFormat: "hex",
+    onChange: function (color) {
+      sloganPicker.style.backgroundColor = color.rgbaString;
+      lastTextMaterial.color = new THREE.Color(color.hex.slice(0, 7));
+      lastTextMaterial.needsUpdate = true;
+      renderer.render(scene, camera);
+    },
+    onClose: (color) => {
+      sloganPicker.textContent = color.hex.slice(0, 7);
+      sloganPicker.style.color = isDark(color.hex.slice(1, 7))
+        ? "white"
+        : "black";
+    },
+  });
 };
 
 const animate = function () {
