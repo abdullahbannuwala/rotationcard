@@ -583,7 +583,7 @@ const initColorPickers = () => {
 
 const animate = function () {
   id = requestAnimationFrame(animate);
-  card.rotation.y += 0.15;
+  card.rotation.y += 0.015;
   if (videoFormat) {
     changeBTextureVideo();
   } else {
