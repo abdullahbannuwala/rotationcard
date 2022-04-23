@@ -594,11 +594,12 @@ const animate = function () {
   card.rotation.y += 0.015;
   if (videoFormat) {
     changeBTextureVideo();
+    renderer.render(scene, camera);
   } else {
     changeBTextureGif();
+    renderer.render(scene, camera);
     capturer.capture(renderer.domElement);
   }
-  renderer.render(scene, camera);
   ctx.drawImage(renderer.domElement, 0, 0);
 };
 
